@@ -54,7 +54,9 @@ userid: ${data.userid}`);
     };
 
     // 메시지를 전송한 클라이언트를 제외한 모든 클라이언트에게 메시지를 전송한다
-    socket.broadcast.emit('chat', msg);
+    // socket.broadcast.emit('chat', msg);
+    
+    io.emit('chat', msg);
 
     // 메시지를 전송한 클라이언트에게만 메시지를 전송한다
     // socket.emit('s2c chat', msg);
