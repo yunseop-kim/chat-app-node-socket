@@ -2,11 +2,13 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as socketio from 'socket.io';
+import * as redis from 'socket.io-redis'
 
 const app = express();
 const server = http.createServer(app);
 // http server를 socket.io server로 upgrade한다
 const io = socketio(server);
+io.adapter(redis({ host: 'localhost', port: 6379 }));
 interface IUserInfo {
   name: string;
   userid: string;
@@ -28,7 +30,7 @@ app.get('/', (req: express.Request, res: express.Response) => {
 });
 // namespace /chat에 접속한다.
 const chat = io.of('/chat').on('connection', (socket: IMySocket) => {
-  socket.on('chat message', (data: IUserInfo) => {
+  socket.on('chatMessage', (data: IUserInfo) => {
     // tslint:disable-next-line:no-console
     console.log('message from client: ', data);
 
@@ -38,7 +40,7 @@ const chat = io.of('/chat').on('connection', (socket: IMySocket) => {
     // room에 join한다
     socket.join(room);
     // room에 join되어 있는 클라이언트에게 메시지를 전송한다
-    chat.to(room).emit('chat message', data.msg);
+    chat.to(room).emit('chatMessage', `${data.name}:${data.msg} - ${process.pid}`);
   });
 });
 
