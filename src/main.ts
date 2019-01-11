@@ -22,21 +22,13 @@ interface IMySocket extends socketio.Socket {
   room: string;
 }
 
-// localhost:3000으로 서버에 접속하면 클라이언트로 index.html을 전송한다
-app.get('/', (req: express.Request, res: express.Response) => {
-  // tslint:disable-next-line:no-console
-  console.log(req.method);
-  res.sendFile(`${__dirname}/index.html`);
-});
 // namespace /chat에 접속한다.
 const chat = io.of('/chat').on('connection', (socket: IMySocket) => {
   socket.on('chatMessage', (data: IUserInfo) => {
     // tslint:disable-next-line:no-console
-    console.log('message from client: ', data);
-
+    console.log('data:', data);
     socket.name = data.name;
-    const room = socket.room = data.room;
-
+    const room = (socket.room = data.room);
     // room에 join한다
     socket.join(room);
     // room에 join되어 있는 클라이언트에게 메시지를 전송한다
