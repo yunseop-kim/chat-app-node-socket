@@ -1,0 +1,15 @@
+{
+  "apps": [{
+    "name": "socket-server",
+    "script": "./node_modules/.bin/ts-node",
+    "args": "src/main.ts",
+    "watch": false,
+    "env": {
+      "NODE_ENV": "dev",
+      "LOG_LEVEL": "debug",
+      "PORT": 3000
+    },
+    "exec_mode": "cluster",
+    "instances": 2
+  }]
+}
