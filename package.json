@@ -25,6 +25,7 @@
   },
   "scripts": {
     "start": "pm2 start server.config-dev.json",
+    "dev": "ts-node src/main.ts",
     "clean": "rimraf coverage build tmp",
     "build": "tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json",
