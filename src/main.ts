@@ -1,15 +1,11 @@
-// const app = require('express')();
 import * as express from 'express';
 import * as http from 'http';
-import * as redis from 'redis';
 import * as socketio from 'socket.io';
-// import * as redis from 'socket.io-redis'
 
 const app = express();
 const server = http.createServer(app);
 // http server를 socket.io server로 upgrade한다
 const io = socketio(server);
-// io.adapter(redis({ host: 'localhost', port: 6379 }));
 interface IUserInfo {
   name: string;
   userid: string;
@@ -22,10 +18,6 @@ interface IMySocket extends socketio.Socket {
   userid: string;
   room: string;
 }
-
-// namespace /chat에 접속한다.
-const client: redis.RedisClient = redis.createClient();
-client.psubscribe('test/*');
 
 const chat = io.of('/chat').on('connection', (socket: IMySocket) => {
   const address = socket.handshake.address;
@@ -54,15 +46,8 @@ const chat = io.of('/chat').on('connection', (socket: IMySocket) => {
     console.log(`from ${address}, ${socket.id}`);
     socket.name = data.name;
     const room = (socket.room = data.room);
-    chat.to(room).emit('chatMessage', { name: data.name, msg: data.msg });
+    chat.to(`test/${room}`).emit('chatMessage', { name: data.name, msg: data.msg });
   });
-});
-
-client.on('pmessage', (pattern: string, channel: string, message: string) => {
-  console.log('client pub', pattern, channel, message);
-  chat
-    .to(channel)
-    .emit('chatMessage', { name: 'data.name', msg: 'data.msg' });
 });
 
 server.listen(3000, () => {
