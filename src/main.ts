@@ -45,6 +45,7 @@ const chat = io.of('/chat').on('connection', (socket: IMySocket) => {
     );
     socket.join(data.room);
     chat.to(`test/${data.room}`).emit('join', 'test');
+    chat.to('rooms').emit('rooms', chat.adapter.rooms);
     chat.to(socket.id).emit(`you`, `${socket.id} 당신에게만 보냅니다.`);
   });
 
@@ -58,6 +59,7 @@ const chat = io.of('/chat').on('connection', (socket: IMySocket) => {
     );
     chat.to(`test/${data.room}`).emit('leave', 'test');
     socket.leave(data.room);
+    chat.to('rooms').emit('rooms', chat.adapter.rooms);
   });
 
   socket.on('chatMessage', (data: IUserInfo) => {
