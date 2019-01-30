@@ -67,12 +67,12 @@ const chat = io.of('/chat').on('connection', (socket: IMySocket) => {
     console.log(`from ${address}, ${socket.id}`);
     socket.name = data.name;
     const room = (socket.room = data.room);
-    console.log(
-      `Socket info4: ${socket.name}, ${socket.userid}, ${socket.room}`,
-    );
-    chat
-      .to(`test/${room}`)
-      .emit('chatMessage', { name: data.name, msg: data.msg });
+    console.log(`Socket info4: ${socket.name}, ${socket.id}, ${socket.room}`);
+    chat.to(`test/${room}`).emit('chatMessage', {
+      name: data.name,
+      msg: data.msg,
+      socketId: socket.id,
+    });
   });
 
   socket.on('rooms', (data: Object) => {
@@ -81,13 +81,16 @@ const chat = io.of('/chat').on('connection', (socket: IMySocket) => {
   });
 
   socket.on('kick', (data: IUserInfo) => {
-    console.log('강퇴요청');
+    console.log('강퇴요청', data);
     const kicked: socketio.Socket = chat.sockets[data.socketId];
-    console.log('강퇴요청 > kicked', kicked);
+    console.log('강퇴요청 > kicked');
     chat
-      .to(data.room)
+      .to(`test/${data.room}`)
       .emit('kicked', `${data.socketId} is kicked In ${data.room}`);
-    chat.to(kicked.id).emit(`you`, `${kicked.id} 당신은 강퇴되었습니다.`);
+    chat.to(data.socketId).emit(`you`, {
+      type: `kick`,
+      msg: `${data.socketId} 당신은 강퇴되었습니다.`,
+    });
     kicked.leave(data.room);
     console.log(`${data.socketId} is kicked In ${data.room}`);
   });
